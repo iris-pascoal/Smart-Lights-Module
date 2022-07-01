@@ -1,4 +1,4 @@
-# VR Module MQTT Specifications
+# MQTT Specifications
 
 **Server**:  192.168.0.100
 **Port**:1883
