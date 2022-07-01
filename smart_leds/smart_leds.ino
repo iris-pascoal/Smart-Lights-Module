@@ -13,8 +13,8 @@ PubSubClient client(wifi_client);
 char ssid[] = SECRET_SSID;       
 char pass[] = SECRET_PASS; 
 
-BlockNot sectionTimer(2, SECONDS);
-BlockNot shelfTimer(2,  SECONDS);
+BlockNot sectionTimer(60, SECONDS);
+BlockNot shelfTimer(60,  SECONDS);
 
 ///////////////////////////////////////////////////////
 //.........MAIN LED STRIP INITIALIZATION.............//
@@ -31,6 +31,8 @@ boolean moodFlag = false;
 
 int main_led_map[] = {26, 30, 28, 29, 29, 31};//number of leds per section: 0-if section is off; 1- if section is on
 int section = -1; // section of leds being used
+
+int door = 0; //0 for closed or opened door -- 1 for opening or closing door
 
 ///////////////////////////////////////////////////////
 //.........SHELVES LED STRIP INITIALIZATION..........//
@@ -72,9 +74,8 @@ const char* topicShelfColor_4= "shelf/color/4";//subscribe
 const char* topicShelfColor_5= "shelf/color/5";//subscribe
 const char* topicShelfColor_6= "shelf/color/6";//subscribe
 const char* topicShelfColor_7= "shelf/color/7";//subscribe
-const char* acdTopic = "automatic_cabinet_door/controls";//subscribe
 const char* topicVoiceCommand = "voice_control/status";//subscribe
-
+const char* acdTopic = "automatic_cabinet_door/status";//subscribe
 
 
 
@@ -141,11 +142,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if(strcmp(topic, topicMoodStatus)==0){//led moods status
     CRGB aux_color;
     client.publish("mood/state/status", payloadChar, true);
-    moodFlag = true; //assim nã é preciso ligar o mood primeiro
+   //moodFlag = true; //assim nã é preciso ligar o mood primeiro
     if(strcmp(payloadChar, "1")==0){ //neutral mood
       Serial.println("Mood service ON"); 
       //Serial.println("waiting for input......"); 
-      aux_color = CRGB(moodColor[0][0], moodColor[0][1], moodColor[0][2]);
+      //aux_color = CRGB(CRGB::Black);
       handle_mood_service(aux_color);
       moodFlag=true;   
     } else if(strcmp(payloadChar, "0")==0){ //neutral mood
@@ -266,17 +267,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
         handle_led_sec(0, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       } 
       if(strcmp(payloadChar, "2")==0){
-         Serial.println("GIN");
+         Serial.println("COOKIES");
          aux_color = CRGB(shelfColor[1][0], shelfColor[1][1], shelfColor[1][2]);
         handle_led_sec(1, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       }
       if(strcmp(payloadChar, "3")==0){
-        Serial.println("COOKIES");
+        Serial.println("APPLES");
          aux_color = CRGB(shelfColor[2][0], shelfColor[2][1], shelfColor[2][2]);
         handle_led_sec(2, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       } 
       if(strcmp(payloadChar, "4")==0){
-        Serial.println("APPLES");
+        Serial.println("PASTA");
          aux_color = CRGB(shelfColor[3][0], shelfColor[3][1], shelfColor[3][2]);
         handle_led_sec(3, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       }
@@ -292,22 +293,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
       CRGB aux_color;
       shelfTimer.RESET;
       if(strcmp(payloadChar, "1")==0){
-        Serial.println("PASTA");
+        Serial.println("KETCHUP");
         aux_color = CRGB(shelfColor[4][0], shelfColor[4][1], shelfColor[4][2]);
         handle_led_sec(4, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       } 
       if(strcmp(payloadChar, "2")==0){
-        Serial.println("KETCHUP");
+        Serial.println("TOMATOS");
         aux_color = CRGB(shelfColor[5][0], shelfColor[5][1], shelfColor[5][2]);
         handle_led_sec(5, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       }  
       if(strcmp(payloadChar, "3")==0){
-        Serial.println("RICE");
+        Serial.println("BEANS");
         CRGB aux_color = CRGB(shelfColor[6][0], shelfColor[6][1], shelfColor[6][2]);
         handle_led_sec(6, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       } 
       if(strcmp(payloadChar, "4")==0){
-        Serial.println("WATER");
+        Serial.println("SUGAR");
         aux_color = CRGB(shelfColor[7][0], shelfColor[7][1], shelfColor[7][2]);
         handle_led_sec(7, aux_color, sec_led_map, NUM_LEDS_1, leds_1, 1);
       } 
@@ -424,22 +425,31 @@ void callback(char* topic, byte* payload, unsigned int length) {
         shelfColor[7][i] = aux[i];  
       
     }
-    if(strcmp(topic,topicVoiceCommand) == 0){
-     //blinking all leds
-       for(int j = 0; j<2; j++){
-        for(int i = 0; i < NUM_LEDS; i ++){
-          leds[i] = CRGB::Blue;
-        }
-        FastLED.show();
-        delay(500);
-        for(int i = 0; i < NUM_LEDS; i ++){
+    if(strcmp(topic,acdTopic) == 0){
+     //blinking leds orange and yellow
+     
+      if(strcmp(payloadChar, "Door Opening") == 0)
+        door = 1;
+      if(strcmp(payloadChar, "Door Closing") == 0)
+        door = 1;
+      if(strcmp(payloadChar, "Door Open") == 0){
+        door = 0;
+        Serial.println("DOOR");
+        for(int i = 0; i < NUM_LEDS; i++){
           leds[i] = CRGB::Black; 
-        }
+        } 
         FastLED.show();
-        delay(500);
-       } 
-      
+      }
+      if(strcmp(payloadChar, "Door Closed") == 0){
+        door = 0;
+        Serial.println("DOOR");
+        for(int i = 0; i < NUM_LEDS; i++){
+          leds[i] = CRGB::Black; 
+        } 
+        FastLED.show();  
+      }
     }
+
 }
 
 void reconnect() {
@@ -555,6 +565,41 @@ void loop() {
  if(shelfTimer.TRIGGERED){
   handle_led_sec(section_1, CRGB::Black, sec_led_map, NUM_LEDS_1, leds_1, 1); 
   Serial.println("timer 2 off");
+ }
+
+//Blinkinf automatic door leds
+ /*if(door){
+  Serial.println("Door opening");
+  for(int i = 0; i < NUM_LEDS; i = i+2){
+    leds[i] = CRGB::Yellow;
+  }
+  FastLED.show();
+
+  
+  for(int i = 0; i < NUM_LEDS; i = i+2){
+    leds[i] = CRGB::Black; 
+  } 
+  for(int i = 1; i < NUM_LEDS; i = i+2){
+    leds[i] = CRGB::Orange;
+  }
+  FastLED.show();
+  
+  for(int i = 1; i < NUM_LEDS; i = i+2){
+    leds[i] = CRGB::Black; 
+  }
+  FastLED.show();
+  delay(500);
+ }*/
+ if(door){
+  Serial.println("Door opening");
+  for(int i = 0; i < NUM_LEDS; i++){
+    leds[i] = CRGB::Orange;
+  }
+  FastLED.show();
+  for(int i = 0; i < NUM_LEDS; i++){
+    leds[i] = CRGB::Red; 
+  } 
+  FastLED.show();
  }
  
 }
