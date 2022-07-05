@@ -10,6 +10,7 @@ Smart light module for Kitchen
  - ESP32 Pico Kit: https://pt.mouser.com/ProductDetail/Espressif-Systems/ESP32-PICO-KIT?qs=MLItCLRbWsyoLrlknFRqcQ%3D%3D
  - Breadboard: https://www.electrofun.pt/prototipagem/breadboard-arduino-830-pontos
  - WS2812 Leds: https://www.ptrobotics.com/neopixel/7834-fita-led-rgb-ws2812b-60-5050-5v-black-1mt.html
+ - 5V power supply to power the esp32 and the led strips
 
 ## Required Libraries
  - FastLED.h
@@ -19,13 +20,14 @@ Smart light module for Kitchen
  - BlockNot.h
 
 ## Other Requirements
- - MQTT Broker
+ - MQTT Broker - see MQTT Specs 
 
 ## Installation/Getting Started
 This module consists of 6 led strips connected to the ESP32 to assist users when getting food from the kitchen
 
 The set-up should be as follows:
 ![Kitchen closet set-up](set-up.PNG)
+<img src="/images/lac%2Bla.png" alt="P-16" width="200"/> <img src="/images/p16-p-family.png" alt="P-16" width="400"/> 
 
 Each of the led strips is connected to a pin in the ESP32. The WS2812 led stripshave three pins: Vin, GND and Din.
 The Vin pins should be connected to a power supply of 5V, the GND can be connected to the boards GND pin, and finally the Din pin should be connected to a respective ESP32 pin. 
