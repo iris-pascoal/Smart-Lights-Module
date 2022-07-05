@@ -2,7 +2,7 @@
 
 Smart light module for Kitchen
 
-##Authors
+## Authors
 
 Íris Lisboa (Original Developer) & Jorge S. Calado (Supervisor)
 
