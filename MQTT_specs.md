@@ -3,6 +3,13 @@
 **Server**:  192.168.0.100
 **Port**:1883
 
+## MQTT Diagrams
+
+<img src="mood.PNG" width="200"/>
+<img src="shelf.PNG" width="200"/>
+<img src="publish.PNG" width="200"/>
+
+
 ## "mood/state"
 
 **Description**: Turn ON/OFF the mood service or select the desired mood<br>
