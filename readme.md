@@ -26,14 +26,14 @@ Smart light module for Kitchen
 This module consists of 6 led strips connected to the ESP32 to assist users when getting food from the kitchen
 
 The set-up should be as follows:<br>
-<img src="set-up.PNG" alt="Kitchen closet set-up" width="200" height="400"/>
+<img src="files/set-up.PNG" alt="Kitchen closet set-up" width="200" height="400"/>
 
 
 Each of the led strips is connected to a pin in the ESP32. The WS2812 led stripshave three pins: Vin, GND and Din.
 The Vin pins should be connected to a power supply of 5V, the GND can be connected to the boards GND pin, and finally the Din pin should be connected to a respective ESP32 pin. 
 
 The schematics for the project are as follows:<br>
-<img src="schematic.PNG" alt="Schematic" width="200"/>
+<img src="files/schematic.PNG" alt="Schematic" width="200"/>
 
 ## Configuration
 
